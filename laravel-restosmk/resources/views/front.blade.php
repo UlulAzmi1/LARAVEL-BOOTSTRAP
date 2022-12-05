@@ -16,12 +16,12 @@
                     <ul class="navbar-nav gap-5">
 
                         @if (session()->has('cart'))
-                            <li class="nav-item">Cart (
+                            <li class="nav-item"> <a href="{{ url('cart') }}">Cart (
                                 @php
                                     $count = count(session('cart'));
                                     echo $count;
                                 @endphp
-                            )</li>
+                            )</a></li>
                         @else
                             <li class="nav-item">Cart</li>  
                         @endif

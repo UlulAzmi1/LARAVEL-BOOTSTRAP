@@ -27,3 +27,6 @@ Route::get('login',[FrontController::class, 'login']);
 Route::post('postlogin',[FrontController::class, 'postlogin']);
 Route::get('logout',[FrontController::class, 'logout']);
 Route::get('beli/{idmenu}', [CartController::class, 'beli']);
+Route::get('cart', [CartController::class, 'cart']);
+Route::get('hapus/{idmenu}', [CartController::class, 'hapus']);
+Route::get('batal', [CartController::class, 'batal']);
