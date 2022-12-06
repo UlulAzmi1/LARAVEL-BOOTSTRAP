@@ -55,8 +55,8 @@
                 @yield('content')
             </div>
         </div>
-        <div>
-            footer
+        <div class="bg-light mt-5">
+           <p class="text-center">@smkrevit.com</p>
         </div>
     </div>
 
