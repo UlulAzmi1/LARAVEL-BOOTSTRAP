@@ -32,3 +32,4 @@ Route::get('hapus/{idmenu}', [CartController::class, 'hapus']);
 Route::get('batal', [CartController::class, 'batal']);
 Route::get('tambah/{idmenu}', [CartController::class, 'tambah']);
 Route::get('kurang/{idmenu}', [CartController::class, 'kurang']);
+Route::get('checkout', [CartController::class, 'checkout']);
