@@ -14,6 +14,7 @@ class CartController extends Controller
 
         $cart = session()->get('cart', []);
 
+
         if (isset($cart[$idmenu])) {
             $cart[$idmenu]['jumlah']++;
         } else {
@@ -50,5 +51,28 @@ class CartController extends Controller
     {
         session()->forget('cart');
         return redirect('/');
+    }
+
+    public function tambah($idmenu)
+    {
+        $cart = session()->get('cart');
+        $cart[$idmenu]['jumlah']++;
+        session()->put('cart', $cart);
+
+        return redirect('cart');
+    }
+
+    public function kurang($idmenu)
+    {
+        $cart = session()->get('cart');
+        if ($cart[$idmenu]['jumlah'] > 1) {
+            $cart[$idmenu]['jumlah']--;
+            session()->put('cart', $cart);
+        } else {
+            unset($cart[$idmenu]);
+            session()->put('cart', $cart);
+        }
+        
+        return redirect('cart');
     }
 }
