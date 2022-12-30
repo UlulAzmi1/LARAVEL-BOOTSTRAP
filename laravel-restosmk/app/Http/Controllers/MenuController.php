@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\Kategori;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
 
@@ -15,7 +17,9 @@ class MenuController extends Controller
      */
     public function index()
     {
-        //
+        $kategoris = Kategori::all();
+        $menus = Menu::join('kategoris','menus.idkategori','=','kategoris.idkategori')->select(['menus.*','kategoris.*'])->paginate(3);
+        return view('Backend.menu.select',['menus'=>$menus,'kategoris'=>$kategoris]);
     }
 
     /**
@@ -24,8 +28,10 @@ class MenuController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        //
+    { 
+        $kategoris = Kategori::all();
+
+        return view('Backend.menu.insert',['kategoris'=>$kategoris]);
     }
 
     /**
@@ -34,9 +40,31 @@ class MenuController extends Controller
      * @param  \App\Http\Requests\StoreMenuRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreMenuRequest $request)
+    public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'gambar' => 'required|max:2048',
+            'menu' => 'required',
+            'deskripsi' => 'required',
+            'harga' => 'required'
+        ]); 
+
+        $id = $request->idkategori;
+
+        $namagambar = $request->file('gambar')->getClientOriginalName();
+        
+        $request->gambar->move(public_path('gambar'),$namagambar);
+
+        Menu::create([
+            'idkategori' => $id,
+            'menu' => $data['menu'],
+            'deskripsi' => $data['deskripsi'],
+            'harga' => $data['harga'],
+            'gambar' => $namagambar
+        ]);
+
+        return redirect('admin/menu');
+
     }
 
     /**
@@ -45,9 +73,11 @@ class MenuController extends Controller
      * @param  \App\Models\Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function show(Menu $menu)
+    public function show($idmenu)
     {
-        //
+        Menu::where('idmenu','=',$idmenu)->delete();
+
+        return redirect('admin/menu');
     }
 
     /**
@@ -56,9 +86,11 @@ class MenuController extends Controller
      * @param  \App\Models\Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function edit(Menu $menu)
+    public function edit($idmenu)
     {
-        //
+        $kategoris = Kategori::all();
+        $menu = Menu::where('idmenu', $idmenu)->first();
+        return view('Backend.menu.update', ['menu' => $menu,'kategoris' => $kategoris]);
     }
 
     /**
@@ -68,9 +100,44 @@ class MenuController extends Controller
      * @param  \App\Models\Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMenuRequest $request, Menu $menu)
+    public function update(Request $request, $idmenu)
     {
-        //
+        if (isset($request->gambar)) {
+
+            $namagambar = $request->file('gambar')->getClientOriginalName();
+    
+            $data = $request->validate([
+                'gambar' => 'required|max2048',
+                'menu' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required'
+            ]); 
+
+            Menu::where('idmenu', $idmenu)->update([
+                'menu' => $data['menu'],
+                'deskripsi' => $data['deskripsi'],
+                'harga' => $data['harga'],
+                'gambar' => $namagambar
+            ]);
+
+            $request->gambar->move(public_path('gambar'),$namagambar);
+
+        } else {
+            $data = $request->validate([
+                'menu' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required'
+            ]); 
+
+            Menu::where('idmenu', $idmenu)->update([
+                'menu' => $data['menu'],
+                'deskripsi' => $data['deskripsi'],
+                'harga' => $data['harga'],
+            ]);
+        }
+
+        return redirect('admin/menu');
+        
     }
 
     /**
@@ -82,5 +149,18 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         //
+    }
+
+    public function select(Request $request)
+    {
+        $id = $request->idkategori;
+
+        $kategoris = Kategori::all();
+        $menus = Menu::join('kategoris','menus.idkategori','=','kategoris.idkategori')
+        ->select(['menus.*','kategoris.*'])
+        ->where('menus.idkategori',$id)
+        ->paginate(3);
+
+        return view('Backend.menu.select',['menus'=>$menus,'kategoris'=>$kategoris]);
     }
 }
