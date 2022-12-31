@@ -15,6 +15,7 @@ class Order extends Model
         'tglorder',
         'total',
         'bayar',
-        'kembali'
+        'kembali',
+        'status'
     ];
 }
