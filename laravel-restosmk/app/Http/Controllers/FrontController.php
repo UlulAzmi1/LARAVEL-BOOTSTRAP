@@ -59,7 +59,8 @@ class FrontController extends Controller
             'alamat'=> $data['alamat'],
             'telp'=> $data['telp'],
             'email'=> $data['email'],
-            'password'=> Hash::make($data['password'])
+            'password'=> Hash::make($data['password']),
+            'aktif'=> 1
         ]);
 
         return redirect('/');
@@ -135,7 +136,7 @@ class FrontController extends Controller
             'password' => 'required |min:3'
         ]);
 
-        $pelanggan = Pelanggan::where('email', $data)->first();
+        $pelanggan = Pelanggan::where('email', $data)->where('aktif',1)->first();
 
         if ($pelanggan) {
             if (Hash::check($data['password'], $pelanggan['password'])) {
